@@ -2,13 +2,14 @@ import {httpServer} from './src/http_server'
 import {WebSocketServer} from "ws"
 import dotenv from 'dotenv'
 import {WebSocket} from 'ws'
+import {Commands} from "./src/types"
 dotenv.config()
 
 const PORT_HTTP = 8181
 const PORT_WSS = 3000
 
 export interface IMessage {
-  command: any
+  command: Commands
   content: string
   messageId: number
 }
