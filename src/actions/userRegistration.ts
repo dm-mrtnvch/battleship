@@ -21,7 +21,7 @@ export const addNewUser = (name: string, password: string, ws: CustomWebSocket) 
 }
 
 export const registrationSuccess = (name: string, errMsg: string, ws: CustomWebSocket) => {
-  ws.userId = name
+  ws.id = name
   ws.send(
     JSON.stringify({
       type: Commands.REGISTRATION,
@@ -36,7 +36,7 @@ export const registrationSuccess = (name: string, errMsg: string, ws: CustomWebS
 }
 
 export const registrationFail = (name: string, errMsg: string, ws: CustomWebSocket) => {
-  ws.userId = ''
+  ws.id = ''
   ws.send(
     JSON.stringify({
       type: Commands.REGISTRATION,

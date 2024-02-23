@@ -15,7 +15,7 @@ export interface IMessage {
 }
 
 export type CustomWebSocket = WebSocket & {
-  userId: string
+  id: string
   executedAttacks: Set<string>
   aliveStatus?: boolean
   computerOpponent?: boolean

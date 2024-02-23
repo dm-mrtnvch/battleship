@@ -20,8 +20,8 @@ export const getGameRooms = (ws: CustomWebSocket) => {
 
 export const addRoom = (ws: CustomWebSocket) => {
   const user = {
-    name: isUserExist(ws.userId)?.name,
-    index: isUserExist(ws.userId)?.index,
+    name: isUserExist(ws.id)?.name,
+    index: isUserExist(ws.id)?.index,
   }
 
   const id = rooms.size + 1
