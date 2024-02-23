@@ -13,3 +13,12 @@ export enum Commands {
   UPDATE_ROOM = 'update_room',
   UPDATE_WINNERS = 'update_winners'
 }
+
+export enum Attack {
+  Miss = 'miss',
+  Killed = 'killed',
+  Shot = 'shot'
+}
+
+export type AttackType = Attack.Miss | Attack.Killed | Attack.Shot
+
