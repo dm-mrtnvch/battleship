@@ -1,0 +1,70 @@
+import {httpServer} from './src/http_server'
+import {WebSocketServer} from "ws"
+import dotenv from 'dotenv'
+import {WebSocket} from 'ws'
+dotenv.config()
+
+const PORT_HTTP = 8181
+const PORT_WSS = 3000
+
+export interface IMessage {
+  command: any
+  content: string
+  messageId: number
+}
+
+export type CustomWebSocket = WebSocket & {
+  userId: string
+  executedAttacks: Set<string>
+  aliveStatus?: boolean
+  computerOpponent?: boolean
+}
+
+const keepAlive = function() {
+  this.aliveStatus = true
+}
+
+console.log(`HTTP server operational on PORT: ${PORT_HTTP}`)
+httpServer.listen(PORT_HTTP)
+console.log(`WebSocket server active on PORT: ${PORT_WSS}`)
+
+export const webSocketServer = new WebSocketServer({port: PORT_WSS})
+
+const keepAliveInterval: NodeJS.Timeout = setInterval(function checkAlive() {
+  webSocketServer.clients.forEach(function checkClient(client: CustomWebSocket) {
+    if (!client.aliveStatus) return client.terminate()
+
+    client.aliveStatus = false
+    client.ping()
+  })
+}, 1000)
+
+webSocketServer.on('connection', (client: CustomWebSocket) => {
+  console.log('WebSocket server connection established')
+  client.aliveStatus = true
+  client.on('error', console.error)
+  client.on('pong', keepAlive)
+  client.on('message', (messageData: string) => {
+    const message: IMessage = JSON.parse(messageData) as IMessage
+    console.log(`Action received: ${message.command}. Data: ${message.content}`)
+    // TODO handleInput
+  })
+})
+
+webSocketServer.on('close', () => {
+  clearInterval(keepAliveInterval)
+})
+
+
+process.on('SIGINT', () => {
+  clearInterval(keepAliveInterval)
+  webSocketServer.clients.forEach((client: WebSocket) => {
+    if (client.readyState === WebSocket.OPEN) {
+      console.log('WebSocket server disconnection')
+      client.close()
+    }
+  })
+  httpServer.close()
+  webSocketServer.close()
+  process.exit()
+})
