@@ -1,3 +1,4 @@
+import {controller} from "./src/actions/handleControllers";
 import {httpServer} from './src/http_server'
 import {WebSocketServer} from "ws"
 import dotenv from 'dotenv'
@@ -46,9 +47,10 @@ webSocketServer.on('connection', (client: CustomWebSocket) => {
   client.on('error', console.error)
   client.on('pong', keepAlive)
   client.on('message', (messageData: string) => {
-    const message: IMessage = JSON.parse(messageData) as IMessage
+    const message: any = JSON.parse(messageData)
+    const { type, data } = message
     console.log(`Action received: ${message.command}. Data: ${message.content}`)
-    // TODO handleInput
+    controller(type, data, client);
   })
 })
 

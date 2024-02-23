@@ -27,7 +27,7 @@ export const generateRandomAttackMove = (gameId: number, indexPlayer: number, ws
   return randomAttackData_JSON
 }
 
-export const randomAttackHandler = (type: Commands, data: string, ws: CustomWebSocket) => {
+export const randomAttack = (type: Commands, data: string, ws: CustomWebSocket) => {
   const { gameId, indexPlayer} = JSON.parse(data)
   const randomAttackData_JSON = generateRandomAttackMove(gameId, indexPlayer, ws)
   executeAttack(Commands.ATTACK, randomAttackData_JSON, ws)
