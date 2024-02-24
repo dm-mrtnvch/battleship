@@ -5,6 +5,7 @@ import {Attack, Commands} from "../types"
 import {randomInteger} from "../utils"
 import {saveAttack, targetHitCheck, wasAttackExecuted} from "./attackController"
 import {isUserExist} from "./userRegistration"
+import {WebSocket} from 'ws';
 
 export const ENEMY_PC = 'Enemy_PC'
 
@@ -23,7 +24,7 @@ export const ShipCollection = [
 export const StartPlayWithBot = async (ws: CustomWebSocket) => {
   ws.computerOpponent = true
   const wsPC: any = new WebSocket('ws://localhost:3000')
-  wsPC.isAlive = true
+  wsPC.aliveStatus = true
   wsPC.madeAttacks = new Set()
   const id = rooms.size + 1
   const pcIndex = users.length + 1

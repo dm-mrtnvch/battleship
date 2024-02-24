@@ -4,6 +4,7 @@ import {respondToGame} from "../responses"
 import {Attack, Commands} from "../types"
 import {ENEMY_PC} from "./botController"
 import {isUserExist} from "./userRegistration"
+import {WebSocket} from 'ws';
 
 export const saveAttack = (x: number, y: number, set: Set<string>) => {
   set.add(`x${x}y${y}`)
@@ -15,7 +16,7 @@ export const wasAttackExecuted = (x: number, y: number, set: Set<string>) => {
 
 
 export const executeAttack = (type: Commands, data: string, ws: CustomWebSocket) => {
-  const {x, y, gameId, indexPlayer} = JSON.parse(data)
+  const {x, y, gameId, indexPlayer} = JSON?.parse(data)
   const players = rooms.get(gameId)?.users
   const enemy: any = players && players.filter((player) => player.id !== ws.id)[0]
 
@@ -140,10 +141,10 @@ export const executeAttack = (type: Commands, data: string, ws: CustomWebSocket)
   }
 }
 
-export const targetHitCheck = (enemy: any, ships: any, x: number, y: number, indexPlayer: number, ws: CustomWebSocket) => {
+export const targetHitCheck = (enemy: CustomWebSocket, ships: any, x: number, y: number, indexPlayer: number, ws: CustomWebSocket) => {
   const isGameVsPC = rooms.get(1).users[0].isGameVsPC
   const botPC_ID = isGameVsPC && rooms.get(1).users[1].id
-  const enemyID: string = isGameVsPC ? botPC_ID : enemy.id
+  const enemyID: string = isGameVsPC ? botPC_ID : enemy?.id
   let poolS = []
 
   const currentBoard = shipsBoard.get(enemyID)

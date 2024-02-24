@@ -16,7 +16,7 @@ export const addNewUser = (name: string, password: string, ws: CustomWebSocket) 
     victories: 0
   }
   users.push(user)
-  ws.executedAttacks = new Set()
+  ws.madeAttacks = new Set()
   registrationSuccess(name, '', ws)
 }
 

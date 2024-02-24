@@ -4,9 +4,8 @@ import {WebSocketServer} from "ws"
 import dotenv from 'dotenv'
 import {WebSocket} from 'ws'
 import {Commands} from "./src/types"
-dotenv.config()
 
-const PORT_HTTP = 8181
+const PORT_HTTP = 8080
 const PORT_WSS = 3000
 
 export interface IMessage {
@@ -17,7 +16,7 @@ export interface IMessage {
 
 export type CustomWebSocket = WebSocket & {
   id: string
-  executedAttacks: Set<string>
+  madeAttacks: Set<string>
   aliveStatus?: boolean
   computerOpponent?: boolean
 }
@@ -32,42 +31,41 @@ console.log(`WebSocket server active on PORT: ${PORT_WSS}`)
 
 export const webSocketServer = new WebSocketServer({port: PORT_WSS})
 
-const keepAliveInterval: NodeJS.Timeout = setInterval(function checkAlive() {
-  webSocketServer.clients.forEach(function checkClient(client: CustomWebSocket) {
-    if (!client.aliveStatus) return client.terminate()
+const keepAliveInterval: NodeJS.Timeout = setInterval(function ping() {
+  webSocketServer.clients.forEach(function each(ws: CustomWebSocket) {
+    if (!ws.aliveStatus) return ws.terminate();
 
-    client.aliveStatus = false
-    client.ping()
-  })
-}, 1000)
+    ws.aliveStatus = false;
+    ws.ping();
+  });
+}, 1000);
 
-webSocketServer.on('connection', (client: CustomWebSocket) => {
-  console.log('WebSocket server connection established')
-  client.aliveStatus = true
-  client.on('error', console.error)
-  client.on('pong', keepAlive)
-  client.on('message', (messageData: string) => {
-    const message: any = JSON.parse(messageData)
-    const { type, data } = message
-    console.log(`Action received: ${message.command}. Data: ${message.content}`)
-    controller(type, data, client);
-  })
-})
-
-webSocketServer.on('close', () => {
-  clearInterval(keepAliveInterval)
-})
+webSocketServer.on('connection', (ws: CustomWebSocket) => {
+  console.log('Client connected to WebSocket server');
+  ws.aliveStatus = true;
+  ws.on('error', console.error);
+  ws.on('pong', keepAlive);
+  ws.on('message', (rawData: string) => {
+    const message = JSON.parse(rawData.toString());
+    const { type, data } = message;
+    console.log(`Received action: ${type}. With data: ${data}`);
+    controller(type, data, ws);
+  });
+});
+webSocketServer.on('close', function close() {
+  clearInterval(keepAliveInterval);
+});
 
 
 process.on('SIGINT', () => {
-  clearInterval(keepAliveInterval)
+  clearInterval(keepAliveInterval);
   webSocketServer.clients.forEach((client: WebSocket) => {
     if (client.readyState === WebSocket.OPEN) {
-      console.log('WebSocket server disconnection')
-      client.close()
+      console.log('Client disconnected from WebSocket server');
+      client.close();
     }
-  })
-  httpServer.close()
-  webSocketServer.close()
-  process.exit()
-})
+  });
+  httpServer.close();
+  webSocketServer.close();
+  process.exit();
+});

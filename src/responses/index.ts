@@ -47,12 +47,11 @@ export const waitForOpenConnection = async (ws: CustomWebSocket) => {
       if (attempt > maxAttempts - 1) {
         reject(new Error('max attempts reached'))
         clearInterval(intervalId)
-      }
-      if (ws.readyState === ws.OPEN) {
+      } else if (ws.readyState === ws.OPEN) {
         resolve()
         clearInterval(intervalId)
       }
       attempt++
-    }, 300)
+    }, 500)
   })
 }

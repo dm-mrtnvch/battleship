@@ -8,11 +8,7 @@ export const controller = async(type: Commands, data: string, ws: CustomWebSocke
   if (!type) return
 
   const handler = commands.get(type)
+  if (handler) await handler(type, data, ws)
 
-  try {
-    if (handler) await handler(type, data, ws)
-    else ws.send(JSON.stringify({ error: true, errorText: 'invalid request' }))
-  } catch (error) {
-    console.log("error: ", error.message)
-  }
+
 }
